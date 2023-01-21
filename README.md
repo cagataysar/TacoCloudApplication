@@ -7,10 +7,5 @@ These instructions will get you a copy of the project up and running on your loc
 ### Installing
 
 1. Clone the repository
-2. Build the project using Maven:
-
-mvn clean install
-
-3. Run the application:
-
-mvn spring-boot:run
+2. Build the project using Maven: mvn clean install
+3. Run the application: mvn spring-boot:run
