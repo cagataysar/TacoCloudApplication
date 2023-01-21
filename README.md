@@ -1,4 +1,4 @@
-This is a sample Spring Boot application built using the examples from the book "Spring in Action".
+## This is a sample Spring Boot application built using the examples from the book "Spring in Action".
 
 ## Getting Started
 
