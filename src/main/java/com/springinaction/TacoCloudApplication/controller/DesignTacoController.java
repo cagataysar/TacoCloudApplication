@@ -7,10 +7,8 @@ import com.springinaction.TacoCloudApplication.model.TacoOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +33,17 @@ public class DesignTacoController {
     // When an HTTP GET request is recieved dor @RequestMapping, Spring MVC will
     // call this method to handle the request.
     @GetMapping
-    public String showDesignForm() {
+    public String showDesignForm(Model model) {
+        model.addAttribute("design", new Taco());
         return "design";
+    }
+
+    @PostMapping
+    public String processTaco(Taco taco, @ModelAttribute TacoOrder tacoOrder) {
+        tacoOrder.addTaco(taco);
+        log.info("Processing taco: {}", taco);
+
+        return "redirect:/orders/current";
     }
 
     private Iterable<Ingredient> filterByType ( List<Ingredient> ingredients, Type type) {
