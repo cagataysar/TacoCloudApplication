@@ -4,7 +4,9 @@ import com.springinaction.TacoCloudApplication.model.Ingredient;
 import com.springinaction.TacoCloudApplication.model.Ingredient.Type;
 import com.springinaction.TacoCloudApplication.model.Taco;
 import com.springinaction.TacoCloudApplication.model.TacoOrder;
+import com.springinaction.TacoCloudApplication.repo.IngredientRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -17,30 +19,37 @@ import java.util.stream.Collectors;
 
 @Slf4j // Simple Logging Facade for Java
 @Controller // to identify this class as a controller and to mark for component scanning
-@RequestMapping(path = "design")
-@SessionAttributes("tacoOrder")
+@RequestMapping (path = "design")
+@SessionAttributes ("tacoOrder")
 public class DesignTacoController {
 
-    @ModelAttribute(name = "tacoOrder")
-    public TacoOrder order() {
+    private final IngredientRepository ingredientRepo;
+
+    @Autowired
+    public DesignTacoController (IngredientRepository ingredientRepo) {
+        this.ingredientRepo = ingredientRepo;
+    }
+
+    @ModelAttribute (name = "tacoOrder")
+    public TacoOrder order () {
         return new TacoOrder();
     }
 
-    @ModelAttribute(name = "taco")
-    public Taco taco() {
+    @ModelAttribute (name = "taco")
+    public Taco taco () {
         return new Taco();
     }
 
     // When an HTTP GET request is recieved dor @RequestMapping, Spring MVC will
     // call this method to handle the request.
     @GetMapping
-    public String showDesignForm(Model model) {
+    public String showDesignForm (Model model) {
         model.addAttribute("design", new Taco());
         return "design";
     }
 
     @PostMapping
-    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+    public String processTaco (@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
 
         if ( errors.hasErrors() ) {
             return "design";
@@ -52,7 +61,7 @@ public class DesignTacoController {
         return "redirect:/orders/current";
     }
 
-    private Iterable<Ingredient> filterByType ( List<Ingredient> ingredients, Type type) {
+    private Iterable< Ingredient > filterByType (List< Ingredient > ingredients, Type type) {
         return ingredients
                 .stream()
                 .filter(x -> x.getType().equals(type))
@@ -60,6 +69,17 @@ public class DesignTacoController {
     }
 
     @ModelAttribute
+    public void addIngredientsToModel (Model model) {
+        Iterable< Ingredient > ingredients = ingredientRepo.findAll();
+        Type[] types = Ingredient.Type.values();
+        for (Type type : types) {
+            model.addAttribute(
+                    type.toString().toLowerCase(),
+                    filterByType((List< Ingredient >) ingredients, type));
+        }
+    }
+
+    /*@ModelAttribute
     public void addIngredientsToModel(Model model) {
         List<Ingredient> ingredients = Arrays.asList(
                 new Ingredient("FLTO", "Flour Tortilla", Ingredient.Type.WRAP),
@@ -77,6 +97,6 @@ public class DesignTacoController {
         for (Type type : types) {
             model.addAttribute(type.toString().toLowerCase(),filterByType(ingredients, type));
         }
-    }
+    }*/
 }
 
